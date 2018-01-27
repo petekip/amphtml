@@ -107,7 +107,7 @@ const PAGE_LOAD_TIMEOUT_MS = 5000;
 const STORY_LOADED_CLASS_NAME = 'i-amphtml-story-loaded';
 
 /** @const {!Object<string, number>} */
-const MAX_MEDIA_ELEMENT_COUNTS = {
+export const MAX_MEDIA_ELEMENT_COUNTS = {
   [MediaType.AUDIO]: 4,
   [MediaType.VIDEO]: 8,
 };
@@ -238,8 +238,7 @@ export class AmpStory extends AMP.BaseElement {
     this.ampStoryHint_ = new AmpStoryHint(this.win);
 
     /** @private {!MediaPool} */
-    this.mediaPool_ = new MediaPool(this.win, MAX_MEDIA_ELEMENT_COUNTS,
-        element => this.getElementDistanceFromActivePage_(element));
+    this.mediaPool_ = MediaPool.forStory(this.element);
 
     /** @private @const {!../../../src/service/timer-impl.Timer} */
     this.timer_ = Services.timerFor(this.win);
@@ -379,11 +378,6 @@ export class AmpStory extends AMP.BaseElement {
       } else if (direction === TapNavigationDirection.PREVIOUS) {
         this.previous_();
       }
-
-      // We do this after navigation, because we do not want to block navigation
-      // on an asynchronous call.  Blessing can also fail, so we do not want to
-      // risk that either.  Otherwise, this can cause #12966.
-      this.mediaPool_.blessAll();
     });
 
     const gestures = Gestures.get(this.element,
@@ -669,7 +663,6 @@ export class AmpStory extends AMP.BaseElement {
         (pageEl, index) => {
           return pageEl.getImpl().then(pageImpl => {
             this.pages_[index] = pageImpl;
-            pageImpl.setMediaPool(this.mediaPool_);
           });
         });
 
@@ -1258,7 +1251,7 @@ export class AmpStory extends AMP.BaseElement {
    * @return {number} The number of pages the specified element is from the
    *     currently active page.
    */
-  getElementDistanceFromActivePage_(element) {
+  getElementDistanceFromActivePage(element) {
     const page = this.getPageContainingElement_(element);
     return page.getDistance();
   }
@@ -1280,9 +1273,7 @@ export class AmpStory extends AMP.BaseElement {
    * @private
    */
   unmute_() {
-    this.mediaPool_.blessAll().then(() => {
-      this.activePage_.unmuteAllMedia();
-    });
+    this.activePage_.unmuteAllMedia();
     this.toggleMutedAttribute_(false);
   }
 

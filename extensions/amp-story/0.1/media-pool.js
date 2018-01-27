@@ -23,6 +23,7 @@ import {
 import {dev} from '../../../src/log';
 import {findIndex} from '../../../src/utils/array';
 import {BLANK_AUDIO_SRC, BLANK_VIDEO_SRC} from './default-media';
+import {MAX_MEDIA_ELEMENT_COUNTS} from './amp-story';
 
 
 
@@ -83,6 +84,12 @@ const PROTECTED_ATTRIBUTES = [
 function ampMediaElementFor(el) {
   return closestBySelector(el, 'amp-video, amp-audio');
 }
+
+
+/**
+ * @type {?MediaPool}
+ */
+let instance;
 
 
 export class MediaPool {
@@ -747,6 +754,28 @@ export class MediaPool {
         }).catch(reason => {
           dev().expectedError('AMP-STORY', 'Blessing media failed: ', reason);
         });
+  }
+
+
+  /**
+   * @param {!Element} element
+   * @return {!Promise<MediaPool>}
+   */
+  static forStory(element) {
+    // Implemented as singleton for now, should be mapped to story element.
+    // TODO(newmuis): Implement mapping to support multiple <amp-story>
+    // instances in one doc.
+    const storyEl = closestBySelector(element, 'amp-story');
+
+    if (instance) {
+      return Promise.resolve(instance);
+    }
+
+    return storyEl.getImpl().then(storyImpl => {
+      instance = new MediaPool(storyImpl.win, MAX_MEDIA_ELEMENT_COUNTS,
+          storyImpl.getElementDistanceFromActivePage);
+      return instance;
+    });
   }
 }
 

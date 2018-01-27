@@ -21,8 +21,11 @@ import {Services} from '../../../src/services';
 import {ProgressBar} from './progress-bar';
 import {getMode} from '../../../src/mode';
 import {matches} from '../../../src/dom';
-import {DevelopmentModeLog, DevelopmentModeLogButtonSet} from './development-ui'; // eslint-disable-line max-len
-
+import {
+  DevelopmentModeLog,
+  DevelopmentModeLogButtonSet,
+} from './development-ui';
+import {MediaPool} from './media-pool';
 
 const MUTE_CLASS = 'i-amphtml-story-mute-audio-control';
 
@@ -115,6 +118,9 @@ export class SystemLayer {
 
     /** @private {!DevelopmentModeLogButtonSet} */
     this.developerButtons_ = DevelopmentModeLogButtonSet.create(win);
+
+    /** @private @const {?MediaPool} */
+    this.mediaPool_ = null;
   }
 
   /**
@@ -135,6 +141,8 @@ export class SystemLayer {
 
     this.leftButtonTray_ =
         this.root_.querySelector('.i-amphtml-story-ui-left');
+
+    this.mediaPool_ = MediaPool.forStory(this.root_);
 
     this.buildForDevelopmentMode_();
 
@@ -193,7 +201,9 @@ export class SystemLayer {
    * @private
    */
   onUnmuteAudioClick_(e) {
-    this.dispatch_(EventType.UNMUTE, e);
+    const unmuteHandler = () => this.dispatch_(EventType.UNMUTE, e);
+    this.mediaPool_.blessAll()
+        .then(unmuteHandler, unmuteHandler);
   }
 
   /**

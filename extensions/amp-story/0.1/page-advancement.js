@@ -20,6 +20,7 @@ import {Services} from '../../../src/services';
 import {VideoEvents} from '../../../src/video-interface';
 import {closest} from '../../../src/dom';
 import {hasTapAction, timeStrToMillis} from './utils';
+import {MediaPool} from './media-pool';
 
 
 /** @private @const {number} */
@@ -258,8 +259,9 @@ class ManualAdvancement extends AdvancementConfig {
   constructor(element) {
     super();
     this.element_ = element;
-    this.clickListener_ = this.maybePerformNavigation_.bind(this);
+    this.clickListener_ = this.blessMediaAndMaybePerformNavigation_.bind(this);
     this.hasAutoAdvanceStr_ = this.element_.getAttribute('auto-advance-after');
+    this.mediaPool_ = MediaPool.forStory(element);
   }
 
   /** @override */
@@ -294,6 +296,15 @@ class ManualAdvancement extends AdvancementConfig {
     return !closest(dev().assertElement(e.target), el => {
       return hasTapAction(el);
     }, /* opt_stopAt */ this.element_);
+  }
+
+  /**
+   *@private
+   */
+  blessMediaAndMaybePerformNavigation_(event) {
+    const maybePerformNavigation = () => this.maybePerformNavigation_(event);
+    this.mediaPool_.blessAll()
+        .then(maybePerformNavigation, maybePerformNavigation);
   }
 
   /**

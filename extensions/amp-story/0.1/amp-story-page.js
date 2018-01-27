@@ -37,6 +37,7 @@ import {getMode} from '../../../src/mode';
 import {LoadingSpinner} from './loading-spinner';
 import {listen} from '../../../src/event-helper';
 import {debounce} from '../../../src/utils/rate-limit';
+import {MediaPool} from './media-pool';
 
 
 /**
@@ -83,14 +84,8 @@ export class AmpStoryPage extends AMP.BaseElement {
       this.markPageAsLoaded_();
     });
 
-    /** @private @const {!Promise<!./media-pool.MediaPool>} */
-    this.mediaPoolPromise_ = new Promise((resolve, reject) => {
-      this.setMediaPool = mediaPool => {
-        this.mediaLayoutPromise_
-            .then(() => resolve(mediaPool))
-            .catch(reject);
-      };
-    });
+    /** @private @const {!MediaPool} */
+    this.mediaPool_ = MediaPool.forStory(this.element);
 
     /** @private @const {boolean} Only prerender the first story page. */
     this.prerenderAllowed_ = matches(this.element,
@@ -190,7 +185,7 @@ export class AmpStoryPage extends AMP.BaseElement {
 
     return Promise.all([
       this.beforeVisible(),
-      this.mediaPoolPromise_,
+      this.mediaLayoutPromise_,
     ]);
   }
 
@@ -291,7 +286,7 @@ export class AmpStoryPage extends AMP.BaseElement {
    */
   forEachMediaElement_(callbackFn) {
     const mediaSet = this.getAllMedia_();
-    return this.mediaPoolPromise_.then(mediaPool => {
+    return Promise.resolve(this.mediaPool_).then(mediaPool => {
       Array.prototype.forEach.call(mediaSet, mediaEl => {
         callbackFn(mediaPool, mediaEl);
       });
