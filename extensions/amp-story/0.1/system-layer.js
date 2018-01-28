@@ -119,8 +119,8 @@ export class SystemLayer {
     /** @private {!DevelopmentModeLogButtonSet} */
     this.developerButtons_ = DevelopmentModeLogButtonSet.create(win);
 
-    /** @private {?Promise<!MediaPool>} */
-    this.mediaPoolPromise_ = null;
+    /** @private {?MediaPool} */
+    this.mediaPool_ = null;
   }
 
   /**
@@ -142,7 +142,9 @@ export class SystemLayer {
     this.leftButtonTray_ =
         this.root_.querySelector('.i-amphtml-story-ui-left');
 
-    this.mediaPoolPromise_ = MediaPool.forStory(this.root_);
+    MediaPool.forStory(this.root_).then(mediaPool => {
+      this.mediaPool_ = mediaPool;
+    });
 
     this.buildForDevelopmentMode_();
 
@@ -202,9 +204,7 @@ export class SystemLayer {
    */
   onUnmuteAudioClick_(e) {
     const unmuteHandler = () => this.dispatch_(EventType.UNMUTE, e);
-    this.mediaPoolPromise_
-        .then(mediaPool => mediaPool.blessAll())
-        .then(unmuteHandler, unmuteHandler);
+    this.mediaPool_.blessAll().then(unmuteHandler, unmuteHandler);
   }
 
   /**
