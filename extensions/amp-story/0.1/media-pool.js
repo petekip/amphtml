@@ -577,11 +577,12 @@ export class MediaPool {
    *     element is complete.
    */
   bless_(mediaEl) {
+    console.log('blessing', mediaEl);
     const isPaused = mediaEl.paused;
     const isMuted = mediaEl.muted;
     const currentTime = mediaEl.currentTime;
 
-    console.log('blessing', mediaEl);
+    console.log('unmuting', mediaEl);
     mediaEl.muted = false;
     console.log('unmuted', mediaEl);
     return Promise.resolve(mediaEl.play()).then(() => {
@@ -756,19 +757,25 @@ export class MediaPool {
    *     the pool are blessed.
    */
   blessAll() {
+    console.log('blessing all');
     if (this.blessed_) {
       return Promise.resolve();
     }
 
     const blessPromises = [];
     this.forEachMediaElement_(mediaEl => {
+      console.log('kicking off bless', mediaEl);
       blessPromises.push(this.bless_(mediaEl));
     });
 
+    console.log('awaiting bless all');
     return Promise.all(blessPromises)
         .then(() => {
+          console.log('all resolved');
           this.blessed_ = true;
+          console.log('bless all successful');
         }).catch(reason => {
+          console.error('bless all failed', reason);
           dev().expectedError('AMP-STORY', 'Blessing all media failed: ',
               reason);
         });
