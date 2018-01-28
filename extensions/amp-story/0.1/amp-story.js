@@ -68,7 +68,7 @@ import {Gestures} from '../../../src/gesture';
 import {SwipeXYRecognizer} from '../../../src/gesture-recognizers';
 import {dict} from '../../../src/utils/object';
 import {renderSimpleTemplate} from './simple-template';
-import {MediaPool, MediaType} from './media-pool';
+import {MediaType} from './media-pool';
 import {PaginationButtons} from './pagination-buttons';
 import {TapNavigationDirection} from './page-advancement';
 
@@ -107,7 +107,7 @@ const PAGE_LOAD_TIMEOUT_MS = 5000;
 const STORY_LOADED_CLASS_NAME = 'i-amphtml-story-loaded';
 
 /** @const {!Object<string, number>} */
-export const MAX_MEDIA_ELEMENT_COUNTS = {
+const MAX_MEDIA_ELEMENT_COUNTS = {
   [MediaType.AUDIO]: 4,
   [MediaType.VIDEO]: 8,
 };
@@ -1251,6 +1251,15 @@ export class AmpStory extends AMP.BaseElement {
   getElementDistanceFromActivePage(element) {
     const page = this.getPageContainingElement_(element);
     return page.getDistance();
+  }
+
+
+  /**
+   * @return {!Object<!MediaType, number>} The maximum amount of each media
+   *     type to allow within this story.
+   */
+  getMaxMediaElementCounts() {
+    return MAX_MEDIA_ELEMENT_COUNTS;
   }
 
 

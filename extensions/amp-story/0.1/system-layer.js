@@ -119,7 +119,7 @@ export class SystemLayer {
     /** @private {!DevelopmentModeLogButtonSet} */
     this.developerButtons_ = DevelopmentModeLogButtonSet.create(win);
 
-    /** @private @const {?Promise<!MediaPool>} */
+    /** @private {?Promise<!MediaPool>} */
     this.mediaPoolPromise_ = null;
   }
 

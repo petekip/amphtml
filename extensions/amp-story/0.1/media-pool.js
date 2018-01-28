@@ -23,7 +23,6 @@ import {
 import {dev} from '../../../src/log';
 import {findIndex} from '../../../src/utils/array';
 import {BLANK_AUDIO_SRC, BLANK_VIDEO_SRC} from './default-media';
-import {MAX_MEDIA_ELEMENT_COUNTS} from './amp-story';
 
 
 
@@ -89,7 +88,7 @@ function ampMediaElementFor(el) {
 /**
  * @type {?MediaPool}
  */
-let instance;
+let instance = null;
 
 
 export class MediaPool {
@@ -759,7 +758,7 @@ export class MediaPool {
 
   /**
    * @param {!Element} element
-   * @return {!Promise<MediaPool>}
+   * @return {!Promise<!MediaPool>}
    */
   static forStory(element) {
     // Implemented as singleton for now, should be mapped to story element.
@@ -772,7 +771,8 @@ export class MediaPool {
     }
 
     return storyEl.getImpl().then(storyImpl => {
-      instance = new MediaPool(storyImpl.win, MAX_MEDIA_ELEMENT_COUNTS,
+      instance = new MediaPool(storyImpl.win,
+          storyImpl.getMaxMediaElementCounts(),
           storyImpl.getElementDistanceFromActivePage);
       return instance;
     });
