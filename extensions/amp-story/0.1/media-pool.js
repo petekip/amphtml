@@ -581,17 +581,32 @@ export class MediaPool {
     const isMuted = mediaEl.muted;
     const currentTime = mediaEl.currentTime;
 
+    console.log('blessing', mediaEl);
     mediaEl.muted = false;
+    console.log('unmuted', mediaEl);
     return Promise.resolve(mediaEl.play()).then(() => {
+      console.log('played', mediaEl);
+
       if (isPaused) {
+        console.log('need to re-pause', mediaEl);
         mediaEl.pause();
+        console.log('re-paused', mediaEl);
         mediaEl.currentTime = currentTime;
+      } else {
+        console.log('do not need to re-pause', mediaEl);
       }
 
       if (isMuted) {
+        console.log('need to re-mute', mediaEl);
         mediaEl.muted = true;
+        console.log('re-muted', mediaEl);
+      } else {
+        console.log('do not need to re-mute', mediaEl);
       }
+
+      console.log('successfully blessed', mediaEl);
     }).catch(reason => {
+      console.error('failed to bless', mediaEl);
       dev().expectedError('AMP-STORY', 'Blessing media element failed: ',
           reason);
     });
