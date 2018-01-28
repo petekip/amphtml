@@ -591,6 +591,9 @@ export class MediaPool {
       if (isMuted) {
         mediaEl.muted = true;
       }
+    }).catch(reason => {
+      dev().expectedError('AMP-STORY', 'Blessing media element failed: ',
+          reason);
     });
   }
 
@@ -751,7 +754,8 @@ export class MediaPool {
         .then(() => {
           this.blessed_ = true;
         }).catch(reason => {
-          dev().expectedError('AMP-STORY', 'Blessing media failed: ', reason);
+          dev().expectedError('AMP-STORY', 'Blessing all media failed: ',
+              reason);
         });
   }
 
