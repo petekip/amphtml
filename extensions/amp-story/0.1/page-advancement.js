@@ -261,7 +261,7 @@ class ManualAdvancement extends AdvancementConfig {
     this.element_ = element;
     this.clickListener_ = this.blessMediaAndMaybePerformNavigation_.bind(this);
     this.hasAutoAdvanceStr_ = this.element_.getAttribute('auto-advance-after');
-    this.mediaPool_ = MediaPool.forStory(element);
+    this.mediaPoolPromise_ = MediaPool.forStory(element);
   }
 
   /** @override */
@@ -303,7 +303,8 @@ class ManualAdvancement extends AdvancementConfig {
    */
   blessMediaAndMaybePerformNavigation_(event) {
     const maybePerformNavigation = () => this.maybePerformNavigation_(event);
-    this.mediaPool_.blessAll()
+    this.mediaPoolPromise_
+        .then(mediaPool => mediaPool.blessAll())
         .then(maybePerformNavigation, maybePerformNavigation);
   }
 

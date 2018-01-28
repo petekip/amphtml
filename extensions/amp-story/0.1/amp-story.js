@@ -237,9 +237,6 @@ export class AmpStory extends AMP.BaseElement {
     /** @private {!AmpStoryHint} */
     this.ampStoryHint_ = new AmpStoryHint(this.win);
 
-    /** @private {!MediaPool} */
-    this.mediaPool_ = MediaPool.forStory(this.element);
-
     /** @private @const {!../../../src/service/timer-impl.Timer} */
     this.timer_ = Services.timerFor(this.win);
   }

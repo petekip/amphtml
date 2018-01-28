@@ -84,8 +84,8 @@ export class AmpStoryPage extends AMP.BaseElement {
       this.markPageAsLoaded_();
     });
 
-    /** @private @const {!MediaPool} */
-    this.mediaPool_ = MediaPool.forStory(this.element);
+    /** @private @const {!Promise<!MediaPool>} */
+    this.mediaPoolPromise_ = MediaPool.forStory(this.element);
 
     /** @private @const {boolean} Only prerender the first story page. */
     this.prerenderAllowed_ = matches(this.element,
@@ -286,7 +286,7 @@ export class AmpStoryPage extends AMP.BaseElement {
    */
   forEachMediaElement_(callbackFn) {
     const mediaSet = this.getAllMedia_();
-    return Promise.resolve(this.mediaPool_).then(mediaPool => {
+    return this.mediaPoolPromise_.then(mediaPool => {
       Array.prototype.forEach.call(mediaSet, mediaEl => {
         callbackFn(mediaPool, mediaEl);
       });
