@@ -90,6 +90,8 @@ function ampMediaElementFor(el) {
  */
 let instance = null;
 
+let allocatedMediaPools = 0;
+
 
 export class MediaPool {
   /**
@@ -781,7 +783,6 @@ export class MediaPool {
         });
   }
 
-
   /**
    * @param {!Element} element
    * @return {!Promise<!MediaPool>}
@@ -793,6 +794,7 @@ export class MediaPool {
     const storyEl = closestBySelector(element, 'amp-story');
 
     if (instance) {
+      console.log('reusing MediaPool', instance);
       return Promise.resolve(instance);
     }
 
@@ -800,7 +802,11 @@ export class MediaPool {
       instance = new MediaPool(storyImpl.win,
           storyImpl.getMaxMediaElementCounts(),
           storyImpl.getElementDistanceFromActivePage);
+      console.log(`allocated new MediaPool (${++allocatedMediaPools} so far)`,
+          instance);
       return instance;
+    }).catch(reason => {
+      console.error('could not get media pool:', reason);
     });
   }
 }
