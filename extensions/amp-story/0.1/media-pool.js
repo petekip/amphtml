@@ -579,39 +579,22 @@ export class MediaPool {
    *     element is complete.
    */
   bless_(mediaEl) {
-    console.log('blessing', mediaEl);
     const isPaused = mediaEl.paused;
     const isMuted = mediaEl.muted;
     const currentTime = mediaEl.currentTime;
 
-    console.log('playing', mediaEl);
     return mediaEl.play().then(() => {
-      console.log('played', mediaEl);
-
-      console.log('unmuting', mediaEl);
       mediaEl.muted = false;
-      console.log('unmuted', mediaEl);
 
       if (isPaused) {
-        console.log('need to re-pause', mediaEl);
         mediaEl.pause();
-        console.log('re-paused', mediaEl);
         mediaEl.currentTime = currentTime;
-      } else {
-        console.log('do not need to re-pause', mediaEl);
       }
 
       if (isMuted) {
-        console.log('need to re-mute', mediaEl);
         mediaEl.muted = true;
-        console.log('re-muted', mediaEl);
-      } else {
-        console.log('do not need to re-mute', mediaEl);
       }
-
-      console.log('successfully blessed', mediaEl);
     }).catch(reason => {
-      console.error('failed to bless', mediaEl);
       dev().expectedError('AMP-STORY', 'Blessing media element failed: ',
           reason);
     });
@@ -761,25 +744,19 @@ export class MediaPool {
    *     the pool are blessed.
    */
   blessAll() {
-    console.log('blessing all');
     if (this.blessed_) {
       return Promise.resolve();
     }
 
     const blessPromises = [];
     this.forEachMediaElement_(mediaEl => {
-      console.log('kicking off bless', mediaEl);
       blessPromises.push(this.bless_(mediaEl));
     });
 
-    console.log('awaiting bless all');
     return Promise.all(blessPromises)
         .then(() => {
-          console.log('all resolved');
           this.blessed_ = true;
-          console.log('bless all successful');
         }).catch(reason => {
-          console.error('bless all failed', reason);
           dev().expectedError('AMP-STORY', 'Blessing all media failed: ',
               reason);
         });
@@ -796,7 +773,6 @@ export class MediaPool {
     const storyEl = closestBySelector(element, 'amp-story');
 
     if (mediaPoolPromise) {
-      console.log('reusing MediaPool', mediaPoolPromise);
       return mediaPoolPromise;
     }
 
@@ -804,11 +780,9 @@ export class MediaPool {
       const instance = new MediaPool(storyImpl.win,
           storyImpl.getMaxMediaElementCounts(),
           storyImpl.getElementDistanceFromActivePage);
-      console.log(`allocated new MediaPool (${++allocatedMediaPools} so far)`,
-          instance);
       return instance;
     }).catch(reason => {
-      console.error('could not get media pool:', reason);
+      dev().error('AMP-STORY', 'Could not get media pool:', reason);
     });
 
     return mediaPoolPromise;
