@@ -584,11 +584,13 @@ export class MediaPool {
     const isMuted = mediaEl.muted;
     const currentTime = mediaEl.currentTime;
 
-    console.log('unmuting', mediaEl);
-    mediaEl.muted = false;
-    console.log('unmuted', mediaEl);
+    console.log('playing', mediaEl);
     return mediaEl.play().then(() => {
       console.log('played', mediaEl);
+
+      console.log('unmuting', mediaEl);
+      mediaEl.muted = false;
+      console.log('unmuted', mediaEl);
 
       if (isPaused) {
         console.log('need to re-pause', mediaEl);
