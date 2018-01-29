@@ -585,7 +585,7 @@ export class MediaPool {
     console.log('unmuting', mediaEl);
     mediaEl.muted = false;
     console.log('unmuted', mediaEl);
-    return Promise.resolve(mediaEl.play()).then(() => {
+    return mediaEl.play().then(() => {
       console.log('played', mediaEl);
 
       if (isPaused) {
