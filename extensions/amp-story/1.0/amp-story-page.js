@@ -310,7 +310,6 @@ export class AmpStoryPage extends AMP.BaseElement {
       this.emitProgress_(progress)
     );
     this.setDescendantCssTextStyles_();
-    this.setHasAttachmentAttribute_();
     this.setPageDescription_();
   }
 
