@@ -316,11 +316,7 @@ export class AmpStoryPage extends AMP.BaseElement {
     );
     this.setDescendantCssTextStyles_();
     this.setHasAttachmentAttribute_();
-<<<<<<< HEAD
     this.setPageDescription_();
-=======
-    this.handlePageDescription_();
->>>>>>> Remove shadow DOM
   }
 
   /**
